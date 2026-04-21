@@ -4,9 +4,9 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { randomUUID }    from 'crypto';
 
-// Fallback to full winget install path if ffmpeg isn't in PATH yet
-const FFMPEG = process.env.FFMPEG_PATH ||
-  'C:\\Users\\anany\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1-full_build\\bin\\ffmpeg.exe';
+// Use FFMPEG_PATH env var (set in .env for local Windows dev), or fall back to
+// system ffmpeg (available in the production Docker container via apt-get).
+const FFMPEG = process.env.FFMPEG_PATH || 'ffmpeg';
 
 const __dir      = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR  = join(__dir, '../../output');

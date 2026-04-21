@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: creative-studio
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: starter          # upgrade to standard if you need persistent disk
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: ANTHROPIC_API_KEY
+        sync: false        # set this in the Render dashboard
+      - key: OPENAI_API_KEY
+        sync: false        # set this in the Render dashboard

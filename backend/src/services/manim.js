@@ -104,11 +104,12 @@ function spawnManim(scriptPath, mediaDir, jobId) {
       'MathReel'
     ];
 
-    const cmdStr = `python ${args.join(' ')}`;
-    console.log(`[manim][${jobId}] ${cmdStr}`);
+    // PYTHON_CMD can be overridden via env var (e.g. 'python3' on Linux, 'python' on Windows)
+    const pythonCmd = process.env.PYTHON_CMD || 'python';
+    console.log(`[manim][${jobId}] ${pythonCmd} ${args.join(' ')}`);
 
-    const proc = spawn('python', args, {
-      windowsHide: true,          // suppress console window on Windows
+    const proc = spawn(pythonCmd, args, {
+      windowsHide: true,          // no-op on Linux, suppresses CMD popup on Windows
       env: { ...process.env }     // inherit full env (PATH, PYTHONPATH, etc.)
     });
 
