@@ -188,6 +188,46 @@ export async function regenerateSlide(script, slideIndex, instruction = '') {
   return JSON.parse(extractJSON(raw));
 }
 
+const STORY_SYSTEM = `You are a social media content strategist for Cuemath, a K-12 math education brand.
+Create a single Instagram Story slide for parents of school-age children.
+
+STRICT OUTPUT: Return ONLY valid JSON. No markdown, no code blocks, no explanation.
+
+STRUCTURE (three distinct text zones):
+- headline:    scroll-stopping hook, MAX 6 words, emotional, bold statement
+- explanation: core message,          MAX 10 words, simple and clear
+- result:      bottom takeaway/CTA,   MAX 8 words, action-oriented or inspiring
+
+TONE: simple, emotional, parent-focused, reassuring
+
+VISUAL HINT: brief background idea (e.g. "warm sunrise over books", "child smiling at math")
+
+OUTPUT JSON SCHEMA:
+{
+  "format": "story_single",
+  "headline": "string",
+  "explanation": "string",
+  "result": "string",
+  "visual_hint": "string"
+}`;
+
+export async function generateStory(idea) {
+  const client = getClient();
+  const msg = await client.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 400,
+    system: STORY_SYSTEM,
+    messages: [{ role: 'user', content: `Create a story slide for this idea:\n\n"${idea}"` }]
+  });
+
+  const raw = msg.content[0].text.trim();
+  const story = JSON.parse(extractJSON(raw));
+  if (!story.headline || !story.explanation || !story.result) {
+    throw new Error('Story JSON missing required fields');
+  }
+  return story;
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function extractJSON(text) {
