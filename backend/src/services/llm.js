@@ -4,80 +4,164 @@ function getClient() {
   return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 }
 
-const SYSTEM_PROMPT = `You are a social media content strategist for Cuemath, a leading K-12 math education brand.
-Convert rough user ideas into structured Instagram carousel scripts.
+// ─── Format-specific system prompts ──────────────────────────────────────────
 
+const COMMON_RULES = `
+You are a social media content strategist for Cuemath, a K-12 math education brand.
 STRICT OUTPUT: Return ONLY valid JSON. No markdown, no code blocks, no explanation.
 
-CAROUSEL STRUCTURE (exactly 5 slides):
-1. "hook"        — Scroll-stopping opening. Bold claim or surprising stat.
-2. "problem"     — The pain or struggle parents recognise in their child.
-3. "explanation" — Core concept simply explained. No jargon.
-4. "solution"    — Actionable advice parents can apply.
-5. "cta"         — Trust-building call to action. Mention Cuemath naturally.
+CONTENT TYPE:
+- "math_visualization": graphs, equations, geometry, fractions, number lines, coordinates
+- "conceptual_explainer": study habits, psychology, parenting tips, mindset
+
+THEME:
+- "bold_dark": dramatic, high-impact topics
+- "clean_light": warm, conversational, informational topics
+
+AUDIENCE: Parents of K-12 students (not the children themselves).
+TONE: warm, reassuring, expert but approachable.`;
+
+const FORMAT_CONFIGS = {
+  carousel: {
+    instruction: `Create a 5-slide Instagram CAROUSEL (1:1 square format).
+
+SLIDE STRUCTURE (exactly 5):
+1. "hook"        — Scroll-stopping opening, bold claim or surprising stat
+2. "problem"     — Pain/struggle parents recognise in their child
+3. "explanation" — Core concept, simply explained, no jargon
+4. "solution"    — Actionable advice parents can apply
+5. "cta"         — Trust-building CTA, mention Cuemath naturally
 
 WRITING RULES:
-- headline: max 8 words, punchy, emotionally resonant
-- subtext:  max 20 words, plain English, zero jargon
-- Audience: parents of K-12 students (not the students themselves)
-- Tone: warm, reassuring, expert but approachable
-- Each slide must flow logically from the previous
+- headline: max 8 words, punchy
+- subtext:  max 20 words, plain English
 
-CONTENT TYPE:
-- "math_visualization"  → if idea involves graphs, equations, geometry, fractions, number lines, coordinates
-- "conceptual_explainer" → if idea involves study habits, psychology, tips, parenting, mindset concepts
-
-THEME SUGGESTION:
-- "bold_dark"   → for dramatic, high-impact visual topics
-- "clean_light" → for warm, conversational, informational topics
-
-OUTPUT JSON SCHEMA (no deviation allowed):
+OUTPUT JSON:
 {
   "format": "carousel",
-  "title": "concise one-line summary of the carousel",
+  "title": "string",
   "target_audience": "string",
-  "tone": "comma-separated tone descriptors",
-  "content_type": "math_visualization" | "conceptual_explainer",
-  "theme_suggestion": "bold_dark" | "clean_light",
+  "tone": "string",
+  "content_type": "math_visualization|conceptual_explainer",
+  "theme_suggestion": "bold_dark|clean_light",
+  "slides": [
+    {
+      "slide_number": 1,
+      "role": "hook|problem|explanation|solution|cta",
+      "headline": "string",
+      "subtext": "string",
+      "emoji": "single emoji",
+      "visual_hint": "optional string"
+    }
+  ]
+}`,
+    slideCount: 5
+  },
+
+  reel: {
+    instruction: `Create a 6-slide Instagram REEL script (9:16 vertical format, video feel).
+
+SLIDE STRUCTURE (exactly 6 — each slide = one full-screen scene):
+1. "hook"        — 3-word punchy scroll-stopper
+2. "problem"     — The pain point, dramatic
+3. "stat"        — A surprising number or fact
+4. "explanation" — The "aha" moment
+5. "solution"    — What to do, bold and clear
+6. "cta"         — Swipe / follow / try Cuemath
+
+WRITING RULES (VIDEO-FIRST):
+- headline: max 5 words, ALL CAPS energy, very punchy
+- subtext: max 10 words
+- animation_hint: "fade-up" | "slide-left" | "zoom-in" | "pop"
+
+OUTPUT JSON:
+{
+  "format": "reel",
+  "title": "string",
+  "target_audience": "string",
+  "tone": "string",
+  "content_type": "math_visualization|conceptual_explainer",
+  "theme_suggestion": "bold_dark|clean_light",
+  "slides": [
+    {
+      "slide_number": 1,
+      "role": "hook|problem|stat|explanation|solution|cta",
+      "headline": "string",
+      "subtext": "string",
+      "emoji": "single emoji",
+      "visual_hint": "optional string",
+      "animation_hint": "fade-up|slide-left|zoom-in|pop"
+    }
+  ]
+}`,
+    slideCount: 6
+  },
+
+  story: {
+    instruction: `Create a single Instagram STORY (9:16 vertical, one impactful frame).
+
+ONE SLIDE ONLY. Make it standalone and scroll-stopping.
+
+RULES:
+- headline: max 6 words, massive visual impact
+- subtext: 10-15 words, complete thought
+- Must work without context — fully self-contained message
+
+OUTPUT JSON:
+{
+  "format": "story",
+  "title": "string",
+  "target_audience": "string",
+  "tone": "string",
+  "content_type": "math_visualization|conceptual_explainer",
+  "theme_suggestion": "bold_dark|clean_light",
   "slides": [
     {
       "slide_number": 1,
       "role": "hook",
       "headline": "string",
       "subtext": "string",
-      "emoji": "single most relevant emoji",
-      "visual_hint": "optional brief description of ideal background/visual"
+      "emoji": "single emoji",
+      "visual_hint": "string"
     }
   ]
-}`;
+}`,
+    slideCount: 1
+  }
+};
 
 const REGEN_SYSTEM = `You are a social media copywriter for Cuemath (K-12 math education).
-Rewrite a single carousel slide based on the given instruction.
+Rewrite a single slide based on the given instruction.
 Return ONLY a valid JSON object for the slide. No markdown, no explanation.
 
 Schema:
 {
   "slide_number": number,
-  "role": "hook|problem|explanation|solution|cta",
-  "headline": "max 8 words",
-  "subtext": "max 20 words",
+  "role": "string",
+  "headline": "string",
+  "subtext": "string",
   "emoji": "single emoji",
-  "visual_hint": "optional string"
+  "visual_hint": "optional string",
+  "animation_hint": "optional string"
 }`;
 
-export async function generateScript(idea) {
+// ─── Exports ──────────────────────────────────────────────────────────────────
+
+export async function generateScript(idea, format = 'carousel') {
   const client = getClient();
+  const cfg = FORMAT_CONFIGS[format] || FORMAT_CONFIGS.carousel;
+  const system = COMMON_RULES + '\n\n' + cfg.instruction;
+
   const msg = await client.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 1500,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: `Create a carousel script for this idea:\n\n"${idea}"` }]
+    max_tokens: 1800,
+    system,
+    messages: [{ role: 'user', content: `Create a ${format} script for this idea:\n\n"${idea}"` }]
   });
 
   const raw = msg.content[0].text.trim();
-  const json = extractJSON(raw);
-  const script = JSON.parse(json);
-  validateScript(script);
+  const script = JSON.parse(extractJSON(raw));
+  validateScript(script, format, cfg.slideCount);
   return script;
 }
 
@@ -85,7 +169,8 @@ export async function regenerateSlide(script, slideIndex, instruction = '') {
   const client = getClient();
   const current = script.slides[slideIndex];
   const ctx = [
-    `Carousel: "${script.title}"`,
+    `Format: ${script.format}`,
+    `Carousel title: "${script.title}"`,
     `Slide role: "${current.role}"`,
     `Current headline: "${current.headline}"`,
     `Current subtext: "${current.subtext}"`,
@@ -100,9 +185,10 @@ export async function regenerateSlide(script, slideIndex, instruction = '') {
   });
 
   const raw = msg.content[0].text.trim();
-  const json = extractJSON(raw);
-  return JSON.parse(json);
+  return JSON.parse(extractJSON(raw));
 }
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function extractJSON(text) {
   const match = text.match(/\{[\s\S]*\}/);
@@ -110,7 +196,9 @@ function extractJSON(text) {
   return match[0];
 }
 
-function validateScript(script) {
+function validateScript(script, format, expectedCount) {
   if (!Array.isArray(script.slides)) throw new Error('Invalid script: missing slides array');
-  if (script.slides.length !== 5) throw new Error(`Expected 5 slides, got ${script.slides.length}`);
+  // Truncate or pad gracefully rather than hard-failing
+  if (format === 'story') script.slides = script.slides.slice(0, 1);
+  if (script.slides.length < 1) throw new Error('Script has no slides');
 }

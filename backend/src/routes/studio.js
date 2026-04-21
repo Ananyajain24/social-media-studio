@@ -4,11 +4,11 @@ import { generateScript, regenerateSlide } from '../services/llm.js';
 const router = Router();
 
 router.post('/generate', async (req, res) => {
-  const { idea } = req.body;
+  const { idea, format = 'carousel' } = req.body;
   if (!idea?.trim()) return res.status(400).json({ error: 'idea is required' });
 
   try {
-    const script = await generateScript(idea.trim());
+    const script = await generateScript(idea.trim(), format);
     res.json({ script });
   } catch (err) {
     console.error('[generate]', err.message);

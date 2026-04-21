@@ -3,11 +3,14 @@ import useStudioStore from '../store/studioStore';
 import { exportSlide, exportAllSlides } from '../utils/export';
 
 export default function ExportPanel({ slideRefs }) {
-  const { script, activeSlideIndex } = useStudioStore();
+  const { script, activeSlideIndex, format } = useStudioStore();
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
 
   if (!script) return null;
+
+  const formatLabel = { carousel: 'Slides', reel: 'Scenes', story: 'Frame' }[format] || 'Slides';
+  const dims = format === 'carousel' ? '900×900px' : '1080×1920px';
 
   const run = async (fn) => {
     setBusy(true);
@@ -24,17 +27,21 @@ export default function ExportPanel({ slideRefs }) {
   };
 
   const handleAll = () =>
-    run(() => exportAllSlides(slideRefs.current.filter(Boolean), script.title));
+    run(() => exportAllSlides(slideRefs.current.filter(Boolean), script.title, format));
 
   const handleOne = () => {
     const el = slideRefs.current[activeSlideIndex];
     if (!el) return;
-    run(() => exportSlide(el, `slide_${activeSlideIndex + 1}.png`));
+    const label = format === 'reel' ? 'scene' : format === 'story' ? 'story' : 'slide';
+    run(() => exportSlide(el, `${label}_${activeSlideIndex + 1}.png`));
   };
 
   return (
     <div className="bg-gray-900 rounded-2xl p-5 space-y-3">
-      <h3 className="text-sm font-semibold text-white">Export</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-white">Export</h3>
+        <span className="text-[10px] text-gray-600">{dims} · PNG</span>
+      </div>
 
       {status && (
         <p className="text-xs bg-brand-yellow/10 text-brand-yellow border border-brand-yellow/20 rounded-lg px-3 py-2">
@@ -47,19 +54,21 @@ export default function ExportPanel({ slideRefs }) {
         disabled={busy}
         className="w-full flex items-center justify-center gap-2 bg-brand-yellow text-black font-bold py-3 rounded-xl hover:bg-yellow-300 disabled:opacity-40 transition-colors text-sm"
       >
-        {busy ? '⟳ Exporting…' : '↓ Export All Slides (ZIP)'}
+        {busy ? '⟳ Exporting…' : `↓ Export All ${formatLabel} (ZIP)`}
       </button>
 
-      <button
-        onClick={handleOne}
-        disabled={busy}
-        className="w-full flex items-center justify-center gap-2 text-gray-400 hover:text-white border border-gray-800 hover:border-gray-600 font-medium py-2 rounded-xl disabled:opacity-40 transition-colors text-sm"
-      >
-        ↓ Export Slide {activeSlideIndex + 1} (PNG)
-      </button>
+      {format !== 'story' && (
+        <button
+          onClick={handleOne}
+          disabled={busy}
+          className="w-full flex items-center justify-center gap-2 text-gray-400 hover:text-white border border-gray-800 hover:border-gray-600 font-medium py-2 rounded-xl disabled:opacity-40 transition-colors text-sm"
+        >
+          ↓ Export {format === 'reel' ? 'Scene' : 'Slide'} {activeSlideIndex + 1} (PNG)
+        </button>
+      )}
 
       <p className="text-center text-[11px] text-gray-700">
-        Square 1:1 · PNG · Social-ready
+        {format === 'carousel' ? '1:1 square' : '9:16 vertical'} · Social-ready
       </p>
     </div>
   );

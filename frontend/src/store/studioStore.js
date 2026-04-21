@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const useStudioStore = create((set, get) => ({
   idea: '',
+  format: 'carousel',
   script: null,
   selectedTemplate: 'bold_dark',
   activeSlideIndex: 0,
@@ -11,17 +12,18 @@ const useStudioStore = create((set, get) => ({
   error: null,
 
   setIdea: (idea) => set({ idea }),
+  setFormat: (format) => set({ format, script: null, activeSlideIndex: 0, error: null }),
   setActiveSlide: (index) => set({ activeSlideIndex: index }),
   setTemplate: (template) => set({ selectedTemplate: template }),
   clearError: () => set({ error: null }),
 
   generateScript: async () => {
-    const { idea } = get();
+    const { idea, format } = get();
     if (!idea.trim()) return;
     set({ isGenerating: true, error: null, script: null, activeSlideIndex: 0 });
 
     try {
-      const { data } = await axios.post('/api/studio/generate', { idea });
+      const { data } = await axios.post('/api/studio/generate', { idea, format });
       set({
         script: data.script,
         selectedTemplate: data.script.theme_suggestion || 'bold_dark',
