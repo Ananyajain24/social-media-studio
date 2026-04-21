@@ -3,11 +3,11 @@ FROM manimcommunity/manim:stable
 
 USER root
 
-# ── Add Node.js 20 ────────────────────────────────────────────────────────────
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && \
+# ── Add Node.js 20 + system FFmpeg (manim image uses venv ffmpeg, not system) ─
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates ffmpeg && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists*
 
 WORKDIR /app
 
