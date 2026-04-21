@@ -18,17 +18,18 @@ const StoryCard = forwardRef(function StoryCard(
   { story, template = 'bold_dark' },
   ref
 ) {
-  const t    = TEMPLATES[template] || TEMPLATES.bold_dark;
-  const hint = getHintGradient(story.visual_hint);
+  // Always use the selected palette — never fall back to hint-driven colours
+  const t = TEMPLATES[template] || TEMPLATES.bold_dark;
 
-  const bg          = template === 'clean_light' ? t.gradient : hint.grad;
-  const accentColor = template === 'clean_light' ? t.accent   : hint.accent;
-  const textColor   = template === 'clean_light' ? t.text     : '#FFFFFF';
-  const subtextCol  = template === 'clean_light' ? t.subtext  : 'rgba(255,255,255,0.72)';
-  const badgeText   = template === 'clean_light' ? '#FFFFFF'  : '#000000';
+  const bg          = t.gradient;
+  const accentColor = t.accent;
+  const textColor   = t.text;
+  const subtextCol  = t.subtext;
+  const badgeText   = t.badgeText;
 
-  // Radial glow colours derived from hint
-  const glow1 = hint.accent || '#FFCC00';
+  // hint drives only the soft radial glow tint — palette accent is still used for UI
+  const hint  = getHintGradient(story.visual_hint);
+  const glow1 = accentColor;   // glow matches the active palette accent
 
   const S = {
     card: {

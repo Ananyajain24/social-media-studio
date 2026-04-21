@@ -4,6 +4,9 @@ import StoryCard from './StoryCard';
 import { TEMPLATES } from '../utils/brand';
 import { exportSlide } from '../utils/export';
 
+const DARK_PALETTES  = Object.values(TEMPLATES).filter((t) => t.group === 'dark');
+const LIGHT_PALETTES = Object.values(TEMPLATES).filter((t) => t.group === 'light');
+
 const EXAMPLES = [
   'Why kids forget math homework the next day',
   'How to help your child stop fearing math tests',
@@ -153,34 +156,96 @@ export default function StoryGenerator() {
             </div>
 
             {/* Theme */}
-            <div className="bg-gray-900 rounded-2xl p-5 space-y-3">
-              <h3 className="text-sm font-semibold text-white">Theme</h3>
-              <div className="space-y-2">
-                {Object.values(TEMPLATES).map((t) => {
-                  const active = template === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      onClick={() => setTemplate(t.id)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all ${
-                        active
-                          ? 'border-purple-500 bg-purple-500/5'
-                          : 'border-gray-800 hover:border-gray-600'
-                      }`}
-                    >
-                      <div className="flex gap-1">
-                        {[t.bg, t.accent, t.text].map((c, i) => (
-                          <div key={i} className="w-4 h-4 rounded-full ring-1 ring-white/10"
-                               style={{ background: c }} />
-                        ))}
-                      </div>
-                      <span className={`text-sm font-medium ${active ? 'text-purple-400' : 'text-gray-300'}`}>
-                        {t.name}
-                      </span>
-                      {active && <span className="ml-auto text-purple-400 text-xs">✓</span>}
-                    </button>
-                  );
-                })}
+            <div className="bg-gray-900 rounded-2xl overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-3 border-b border-gray-800">
+                <h3 className="text-sm font-semibold text-white">Theme</h3>
+                <div className="flex gap-1">
+                  {[TEMPLATES[template]?.bg, TEMPLATES[template]?.accent, TEMPLATES[template]?.subtext]
+                    .filter(Boolean)
+                    .map((c, i) => (
+                      <div key={i} className="w-3 h-3 rounded-full ring-1 ring-white/10"
+                           style={{ background: c }} />
+                    ))}
+                </div>
+              </div>
+
+              <div className="px-5 py-4 space-y-3">
+                {/* Dark row */}
+                <div>
+                  <p className="text-[10px] text-gray-600 uppercase tracking-wider mb-2">Dark</p>
+                  <div className="flex gap-2 flex-wrap">
+                    {DARK_PALETTES.map((p) => {
+                      const active = template === p.id;
+                      return (
+                        <button
+                          key={p.id}
+                          onClick={() => setTemplate(p.id)}
+                          title={p.name}
+                          className={`flex flex-col items-center gap-1.5 p-2 rounded-xl border transition-all ${
+                            active
+                              ? 'border-white/30 bg-white/5 scale-105'
+                              : 'border-gray-800 hover:border-gray-600 hover:bg-gray-800/40'
+                          }`}
+                        >
+                          <div className="relative w-10 h-10 rounded-full ring-2 ring-white/10"
+                               style={{ background: p.bg }}>
+                            <div className="absolute bottom-0 right-0 w-5 h-5 rounded-full ring-1 ring-white/20"
+                                 style={{ background: p.accent }} />
+                            {active && (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-white text-xs font-black drop-shadow">✓</span>
+                              </div>
+                            )}
+                          </div>
+                          <span className={`text-[10px] font-medium ${active ? 'text-white' : 'text-gray-500'}`}>
+                            {p.name}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Light row */}
+                <div>
+                  <p className="text-[10px] text-gray-600 uppercase tracking-wider mb-2">Light</p>
+                  <div className="flex gap-2 flex-wrap">
+                    {LIGHT_PALETTES.map((p) => {
+                      const active = template === p.id;
+                      return (
+                        <button
+                          key={p.id}
+                          onClick={() => setTemplate(p.id)}
+                          title={p.name}
+                          className={`flex flex-col items-center gap-1.5 p-2 rounded-xl border transition-all ${
+                            active
+                              ? 'border-white/30 bg-white/5 scale-105'
+                              : 'border-gray-800 hover:border-gray-600 hover:bg-gray-800/40'
+                          }`}
+                        >
+                          <div className="relative w-10 h-10 rounded-full ring-2 ring-white/10"
+                               style={{ background: p.bg }}>
+                            <div className="absolute bottom-0 right-0 w-5 h-5 rounded-full ring-1 ring-white/20"
+                                 style={{ background: p.accent }} />
+                            {active && (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-gray-800 text-xs font-black drop-shadow">✓</span>
+                              </div>
+                            )}
+                          </div>
+                          <span className={`text-[10px] font-medium ${active ? 'text-white' : 'text-gray-500'}`}>
+                            {p.name}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Active preview strip */}
+                <div className="rounded-xl overflow-hidden border border-gray-800">
+                  <div className="h-6 w-full" style={{ background: TEMPLATES[template]?.gradient }} />
+                </div>
               </div>
             </div>
 
