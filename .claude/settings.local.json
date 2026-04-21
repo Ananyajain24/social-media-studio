@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(manim --version)",
-      "Bash(python -m manim --version)"
+      "Bash(python -m manim --version)",
+      "Bash(powershell.exe *)"
     ]
   }
 }

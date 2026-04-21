@@ -21,8 +21,8 @@ export default function VideoPlayer({ url }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Your Reel</h3>
-        <span className="text-xs text-gray-600">9:16 · MP4 · 1080×1920</span>
+        <h3 className="text-sm font-semibold text-white">Your Video</h3>
+        <span className="text-xs text-gray-600">9:16 · Ready to share</span>
       </div>
 
       {/* Phone mock frame */}

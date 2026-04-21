@@ -39,8 +39,8 @@ export default function ExportPanel({ slideRefs }) {
   return (
     <div className="bg-gray-900 rounded-2xl p-5 space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Export</h3>
-        <span className="text-[10px] text-gray-600">{dims} · PNG</span>
+        <h3 className="text-base font-semibold text-white">Export</h3>
+        <span className="text-xs text-gray-600">High-res PNG</span>
       </div>
 
       {status && (
@@ -54,7 +54,7 @@ export default function ExportPanel({ slideRefs }) {
         disabled={busy}
         className="w-full flex items-center justify-center gap-2 bg-brand-yellow text-black font-bold py-3 rounded-xl hover:bg-yellow-300 disabled:opacity-40 transition-colors text-sm"
       >
-        {busy ? '⟳ Exporting…' : `↓ Export All ${formatLabel} (ZIP)`}
+        {busy ? '⟳ Saving…' : `↓ Download All ${formatLabel}`}
       </button>
 
       {format !== 'story' && (
@@ -63,12 +63,12 @@ export default function ExportPanel({ slideRefs }) {
           disabled={busy}
           className="w-full flex items-center justify-center gap-2 text-gray-400 hover:text-white border border-gray-800 hover:border-gray-600 font-medium py-2 rounded-xl disabled:opacity-40 transition-colors text-sm"
         >
-          ↓ Export {format === 'reel' ? 'Scene' : 'Slide'} {activeSlideIndex + 1} (PNG)
+          ↓ Download {format === 'reel' ? 'Frame' : 'Slide'} {activeSlideIndex + 1} only
         </button>
       )}
 
       <p className="text-center text-[11px] text-gray-700">
-        {format === 'carousel' ? '1:1 square' : '9:16 vertical'} · Social-ready
+        High-resolution · Social-ready
       </p>
     </div>
   );

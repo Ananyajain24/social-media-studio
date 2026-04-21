@@ -1,6 +1,8 @@
 import { Router }       from 'express';
 import { randomUUID }   from 'crypto';
 import { generateManimCode, renderManimCode } from '../services/manim.js';
+import { generateVoiceover }                  from '../services/voiceover.js';
+import { mergeVideoAudio }                    from '../services/export.js';
 
 const router = Router();
 
@@ -96,6 +98,49 @@ router.get('/status/:jobId', (req, res) => {
     videoUrl: job.videoUrl,  // set when done
     error:    job.error      // set on failure
   });
+});
+
+
+// ─── POST /api/reel/voiceover ─────────────────────────────────────────────────
+// Body: { code: <manim python source> }
+// Returns: { audioUrl, narrationText, duration, wordCount }
+router.post('/voiceover', async (req, res) => {
+  const { code } = req.body;
+
+  if (!code?.trim()) {
+    return res.status(400).json({ error: 'code (Manim source) is required' });
+  }
+
+  try {
+    const result = await generateVoiceover(code);
+    res.json({
+      audioUrl:      result.audioUrl,
+      narrationText: result.narrationText,
+      duration:      result.duration,
+      wordCount:     result.wordCount
+    });
+  } catch (err) {
+    console.error('[voiceover]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// ─── POST /api/reel/export ────────────────────────────────────────────────────
+// Body: { videoFilename, audioFilename }
+// Returns: { mergedUrl }
+router.post('/export', async (req, res) => {
+  const { videoFilename, audioFilename } = req.body;
+  if (!videoFilename || !audioFilename) {
+    return res.status(400).json({ error: 'videoFilename and audioFilename are required' });
+  }
+  try {
+    const result = await mergeVideoAudio(videoFilename, audioFilename);
+    res.json({ mergedUrl: result.mergedUrl });
+  } catch (err) {
+    console.error('[export]', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 

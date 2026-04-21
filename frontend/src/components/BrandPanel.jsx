@@ -53,8 +53,8 @@ export default function BrandPanel() {
     <div className="bg-gray-900 rounded-2xl overflow-hidden">
 
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-gray-800">
-        <h3 className="text-sm font-semibold text-white">Theme & Palette</h3>
+      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800">
+        <h3 className="text-base font-semibold text-white">Theme & Palette</h3>
         {/* Active palette preview strip */}
         <div className="flex gap-1">
           {[current.bg, current.accent, current.subtext].map((c, i) => (

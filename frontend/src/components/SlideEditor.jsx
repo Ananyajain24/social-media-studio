@@ -88,11 +88,11 @@ export default function SlideEditor() {
     <div className="bg-gray-900 rounded-2xl overflow-hidden">
 
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-gray-800">
-        <span className="text-sm font-semibold text-white">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800">
+        <span className="text-base font-semibold text-white">
           Slide {activeSlideIndex + 1}
         </span>
-        <span className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold ${roleCfg.tw}`}>
+        <span className={`text-xs px-2.5 py-1 rounded-full border font-semibold ${roleCfg.tw}`}>
           {roleCfg.label}
         </span>
       </div>
@@ -121,7 +121,7 @@ export default function SlideEditor() {
           </div>
           <div className="flex-1">
             <EditableField
-              label="Visual hint"
+              label="Visual style"
               value={slide.visual_hint || ''}
               onChange={update('visual_hint')}
             />

@@ -15,8 +15,10 @@ const PORT = process.env.PORT || 3001;
 app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173' }));
 app.use(express.json({ limit: '2mb' }));
 
-// Serve generated MP4s as static files
-app.use('/api/reel/video', express.static(join(__dirname, '../output')));
+// Serve generated MP4s, MP3s, and merged exports as static files
+app.use('/api/reel/video',  express.static(join(__dirname, '../output')));
+app.use('/api/reel/audio',  express.static(join(__dirname, '../output/audio')));
+app.use('/api/reel/merged', express.static(join(__dirname, '../output/merged')));
 
 app.use('/api/studio', studioRouter);
 app.use('/api/reel',   reelRouter);

@@ -62,31 +62,44 @@ export default function StoryGenerator() {
   return (
     <div className="w-full space-y-8">
       {/* ── Input section ─────────────────────────────────────────────── */}
-      <div className="max-w-xl mx-auto space-y-3">
+      <div className="max-w-3xl mx-auto space-y-4">
+
+        {!story && (
+          <div className="text-center mb-10 pt-6">
+            <h2 className="text-5xl font-black text-white tracking-tight mb-3">
+              Story Creator
+              <span className="text-purple-400 ml-3">◉</span>
+            </h2>
+            <p className="text-gray-400 text-lg">
+              One idea — one powerful Story frame, ready to post
+            </p>
+          </div>
+        )}
+
         <textarea
           value={idea}
           onChange={(e) => setIdea(e.target.value)}
           disabled={loading}
-          placeholder="What's your story about? (topic, emotion, key message for parents)"
-          rows={3}
-          className="w-full bg-gray-900 border border-gray-700 rounded-2xl px-5 py-4 text-white placeholder-gray-600 resize-none focus:outline-none focus:border-purple-500 transition-colors text-[15px] leading-relaxed"
+          placeholder="What's your story about? (topic, key message, who it's for)"
+          rows={5}
+          className="w-full bg-gray-900 border border-gray-700 rounded-2xl px-6 py-5 text-white placeholder-gray-600 resize-none focus:outline-none focus:border-purple-500 transition-colors text-base leading-relaxed"
         />
 
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-4">
           <button
             onClick={() => setShowEx((v) => !v)}
-            className="text-sm text-gray-600 hover:text-gray-400 transition-colors underline underline-offset-2"
+            className="text-sm text-gray-600 hover:text-gray-400 transition-colors underline underline-offset-4"
           >
-            {showEx ? 'Hide' : 'Show'} examples
+            {showEx ? 'Hide examples' : 'Show me examples'}
           </button>
           <button
             onClick={generate}
             disabled={!idea.trim() || loading}
-            className="flex items-center gap-2 bg-purple-500 hover:bg-purple-400 text-white font-bold px-6 py-2.5 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-sm"
+            className="flex items-center gap-2 bg-purple-500 hover:bg-purple-400 text-white font-bold px-8 py-3.5 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-base"
           >
             {loading
-              ? <><span className="animate-spin inline-block">⟳</span> Generating…</>
-              : '◉ Generate Story'}
+              ? <><span className="animate-spin inline-block">⟳</span> Creating…</>
+              : '◉ Create Story'}
           </button>
         </div>
 
@@ -113,7 +126,7 @@ export default function StoryGenerator() {
 
       {/* ── Studio: preview + controls ────────────────────────────────── */}
       {story && (
-        <div className="grid grid-cols-1 xl:grid-cols-[auto_1fr] gap-10 items-start justify-items-center xl:justify-items-start">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 xl:grid-cols-[auto_1fr] gap-10 items-start justify-items-center xl:justify-items-start">
 
           {/* Phone mock + card */}
           <div className="flex flex-col items-center gap-3">
@@ -263,7 +276,7 @@ export default function StoryGenerator() {
                 {exporting ? '⟳ Exporting…' : '↓ Download Story (PNG)'}
               </button>
               <p className="text-center text-[11px] text-gray-700">
-                9:16 vertical · Social-ready
+                Vertical format · Social-ready
               </p>
             </div>
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import useStudioStore from '../store/studioStore';
 
 const EXAMPLES = [
-  'Carousel for parents about why kids forget what they learn — explain forgetting curve — end with spaced repetition',
+  'Carousel for parents about why kids forget what they learn — explain the forgetting curve — end with spaced repetition',
   'Why math anxiety happens and 3 ways parents can help their child overcome it at home',
   'The difference between memorising formulas and actually understanding math — and why it matters for exams'
 ];
@@ -18,34 +18,35 @@ export default function IdeaInput() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-black text-white tracking-tight mb-2">
+    <div className="w-full max-w-3xl mx-auto">
+      {/* Hero */}
+      <div className="text-center mb-10 pt-6">
+        <h1 className="text-5xl font-black text-white tracking-tight mb-3">
           Creative Studio
-          <span className="text-brand-yellow ml-2">✦</span>
+          <span className="text-brand-yellow ml-3">✦</span>
         </h1>
-        <p className="text-gray-400">
-          Rough idea → polished Instagram carousel in seconds
+        <p className="text-gray-400 text-lg">
+          Describe your idea — get a polished carousel ready to post
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
           <textarea
             value={idea}
             onChange={(e) => setIdea(e.target.value)}
-            placeholder="Describe your carousel idea in plain English... (topic, audience, key message)"
-            rows={4}
+            placeholder="What do you want to teach today? Describe the topic, who it's for, and the key message…"
+            rows={5}
             disabled={isGenerating}
-            className="w-full bg-gray-900 border border-gray-700 rounded-2xl px-5 py-4 text-white placeholder-gray-600 resize-none focus:outline-none focus:border-brand-yellow transition-colors text-[15px] leading-relaxed"
+            className="w-full bg-gray-900 border border-gray-700 rounded-2xl px-6 py-5 text-white placeholder-gray-600 resize-none focus:outline-none focus:border-brand-yellow transition-colors text-base leading-relaxed"
           />
-          <span className="absolute bottom-3 right-4 text-xs text-gray-700">
+          <span className="absolute bottom-4 right-5 text-xs text-gray-700 select-none">
             {idea.length}
           </span>
         </div>
 
         {error && (
-          <div className="bg-red-900/30 border border-red-700/50 rounded-xl px-4 py-3 text-red-400 text-sm">
+          <div className="bg-red-900/30 border border-red-700/50 rounded-xl px-5 py-4 text-red-400 text-sm">
             {error}
           </div>
         )}
@@ -54,19 +55,19 @@ export default function IdeaInput() {
           <button
             type="button"
             onClick={() => setShowExamples((v) => !v)}
-            className="text-sm text-gray-600 hover:text-gray-400 transition-colors underline underline-offset-2"
+            className="text-sm text-gray-600 hover:text-gray-400 transition-colors underline underline-offset-4"
           >
-            {showExamples ? 'Hide' : 'Show'} example prompts
+            {showExamples ? 'Hide examples' : 'Show me examples'}
           </button>
           <button
             type="submit"
             disabled={!idea.trim() || isGenerating}
-            className="flex items-center gap-2 bg-brand-yellow text-black font-bold px-7 py-3 rounded-xl hover:bg-yellow-300 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm"
+            className="flex items-center gap-2 bg-brand-yellow text-black font-bold px-8 py-3.5 rounded-xl hover:bg-yellow-300 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-base"
           >
             {isGenerating ? (
               <>
                 <span className="inline-block animate-spin">⟳</span>
-                Generating…
+                Creating…
               </>
             ) : (
               <>✦ Generate Carousel</>
@@ -81,7 +82,7 @@ export default function IdeaInput() {
                 key={i}
                 type="button"
                 onClick={() => { setIdea(ex); setShowExamples(false); }}
-                className="w-full text-left text-sm bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 rounded-xl px-4 py-3 text-gray-400 hover:text-gray-200 transition-all"
+                className="w-full text-left text-sm bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 rounded-xl px-5 py-4 text-gray-400 hover:text-gray-200 transition-all leading-relaxed"
               >
                 {ex}
               </button>
