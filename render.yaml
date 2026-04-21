@@ -1,10 +1,15 @@
+# NOTE: Docker runtime requires Render's Starter plan ($7/mo).
+# For free deployment, use Railway (see railway.toml) — it supports Docker on the free tier.
+#
+# If you do have a paid Render plan, this blueprint works as-is.
+
 services:
   - type: web
     name: creative-studio
     runtime: docker
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    plan: starter          # upgrade to standard if you need persistent disk
+    plan: starter
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -12,6 +17,6 @@ services:
       - key: PORT
         value: 3001
       - key: ANTHROPIC_API_KEY
-        sync: false        # set this in the Render dashboard
+        sync: false
       - key: OPENAI_API_KEY
-        sync: false        # set this in the Render dashboard
+        sync: false
