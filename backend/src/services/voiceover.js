@@ -1,18 +1,14 @@
-import Anthropic from '@anthropic-ai/sdk';
 import OpenAI    from 'openai';
 import { writeFile, mkdir } from 'fs/promises';
 import { join, dirname }    from 'path';
 import { fileURLToPath }    from 'url';
 import { randomUUID }       from 'crypto';
+import { generateText }     from './aiProvider.js';
 
 const __dir    = dirname(fileURLToPath(import.meta.url));
 const AUDIO_DIR = join(__dir, '../../output/audio');
 
 // ─── Clients ──────────────────────────────────────────────────────────────────
-
-function getAnthropicClient() {
-  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-}
 
 function getOpenAIClient() {
   if (!process.env.OPENAI_API_KEY) {
@@ -46,7 +42,7 @@ export function estimateManimDuration(code) {
   return Math.max(total, 10); // floor at 10s
 }
 
-// ─── Step 1: Manim code → duration-synced narration (via Claude) ─────────────
+// ─── Step 1: Manim code → duration-synced narration (via selected AI) ────────
 
 function buildNarrationSystem(targetSeconds) {
   // At TTS speed 0.95, effective rate ≈ 142 wpm → words per second ≈ 2.37
@@ -77,19 +73,11 @@ HOW TO WRITE THE NARRATION:
 }
 
 export async function generateNarrationText(manimCode, targetSeconds) {
-  const client = getAnthropicClient();
-
-  const msg = await client.messages.create({
-    model:      'claude-sonnet-4-6',
-    max_tokens: 1200,
-    system:     buildNarrationSystem(targetSeconds),
-    messages: [{
-      role:    'user',
-      content: `Analyse this Manim code's timeline and write a ${Math.round((targetSeconds / 60) * 142)}-word frame-synced voiceover:\n\n\`\`\`python\n${manimCode}\n\`\`\``
-    }]
+  return generateText({
+    maxTokens: 1200,
+    system: buildNarrationSystem(targetSeconds),
+    user: `Analyse this Manim code's timeline and write a ${Math.round((targetSeconds / 60) * 142)}-word frame-synced voiceover:\n\n\`\`\`python\n${manimCode}\n\`\`\``
   });
-
-  return msg.content[0].text.trim();
 }
 
 // ─── Step 2: narration text → MP3 (via OpenAI TTS) ───────────────────────────

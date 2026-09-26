@@ -19,17 +19,6 @@ export default function IdeaInput() {
 
   return (
     <div className="w-full max-w-3xl mx-auto">
-      {/* Hero */}
-      <div className="text-center mb-10 pt-6">
-        <h1 className="text-5xl font-black text-white tracking-tight mb-3">
-          Creative Studio
-          <span className="text-brand-yellow ml-3">✦</span>
-        </h1>
-        <p className="text-gray-400 text-lg">
-          Describe your idea — get a polished carousel ready to post
-        </p>
-      </div>
-
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
           <textarea

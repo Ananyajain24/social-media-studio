@@ -138,18 +138,6 @@ export default function ReelGenerator() {
       {/* ── Hero + input ──────────────────────────────────────────────── */}
       <div className="max-w-3xl mx-auto">
 
-        {stage === 'idle' && (
-          <div className="text-center mb-10 pt-6">
-            <h2 className="text-5xl font-black text-white tracking-tight mb-3">
-              Reel Creator
-              <span className="text-pink-400 ml-3">▶</span>
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Describe a concept — get a beautiful animated video with narration
-            </p>
-          </div>
-        )}
-
         <div className="space-y-4">
           <textarea
             value={idea}

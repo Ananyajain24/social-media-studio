@@ -6,9 +6,10 @@ import { dirname, join } from 'path';
 import { existsSync }    from 'fs';
 import studioRouter from './routes/studio.js';
 import reelRouter   from './routes/reel.js';
+import { getAIProvider } from './services/aiProvider.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: join(__dirname, '../.env') });
+dotenv.config({ path: join(__dirname, '../.env'), override: true });
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -49,6 +50,8 @@ if (PROD) {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Studio backend on :${PORT} [${PROD ? 'production' : 'development'}]`);
+  console.log(`  AI_PROVIDER       : ${getAIProvider()}`);
   console.log(`  ANTHROPIC_API_KEY : ${process.env.ANTHROPIC_API_KEY ? '✓' : '✗ MISSING'}`);
+  console.log(`  GEMINI_API_KEY    : ${process.env.GEMINI_API_KEY    ? '✓' : '✗ MISSING'}`);
   console.log(`  OPENAI_API_KEY    : ${process.env.OPENAI_API_KEY    ? '✓' : '✗ MISSING'}`);
 });

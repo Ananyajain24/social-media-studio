@@ -1,7 +1,5 @@
-# NOTE: Docker runtime requires Render's Starter plan ($7/mo).
-# For free deployment, use Railway (see railway.toml) — it supports Docker on the free tier.
-#
-# If you do have a paid Render plan, this blueprint works as-is.
+# Full-stack Docker deployment: Express serves the built React frontend and API.
+# The free plan is suitable for demos and spins down after inactivity.
 
 services:
   - type: web
@@ -9,14 +7,20 @@ services:
     runtime: docker
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    plan: starter
+    plan: free
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 3001
-      - key: ANTHROPIC_API_KEY
+      - key: AI_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
         sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: GEMINI_FALLBACK_MODEL
+        value: gemini-3.8-flash
       - key: OPENAI_API_KEY
         sync: false

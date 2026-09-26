@@ -64,18 +64,6 @@ export default function StoryGenerator() {
       {/* ── Input section ─────────────────────────────────────────────── */}
       <div className="max-w-3xl mx-auto space-y-4">
 
-        {!story && (
-          <div className="text-center mb-10 pt-6">
-            <h2 className="text-5xl font-black text-white tracking-tight mb-3">
-              Story Creator
-              <span className="text-purple-400 ml-3">◉</span>
-            </h2>
-            <p className="text-gray-400 text-lg">
-              One idea — one powerful Story frame, ready to post
-            </p>
-          </div>
-        )}
-
         <textarea
           value={idea}
           onChange={(e) => setIdea(e.target.value)}

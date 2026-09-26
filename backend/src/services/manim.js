@@ -1,28 +1,22 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { spawn }  from 'child_process';
 import { writeFile, mkdir, copyFile, readdir, rm } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { SYSTEM_PROMPT, buildUserPrompt } from './manimTemplate.js';
+import { generateText } from './aiProvider.js';
 
 const __dir     = dirname(fileURLToPath(import.meta.url));
 const TEMP_DIR   = join(__dir, '../../temp');
 const OUTPUT_DIR = join(__dir, '../../output');
 
-function getClient() {
-  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-}
-
 // ─── Step 1: LLM → Manim Python code ─────────────────────────────────────────
 export async function generateManimCode(idea) {
-  const client = getClient();
-  const msg = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 4000,
+  const response = await generateText({
+    maxTokens: 4000,
     system: SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: buildUserPrompt(idea) }]
+    user: buildUserPrompt(idea)
   });
-  const raw  = extractPython(msg.content[0].text.trim());
+  const raw  = extractPython(response);
   const safe = sanitiseLatex(raw);
   return safe;
 }

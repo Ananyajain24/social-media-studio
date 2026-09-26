@@ -1,8 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
-
-function getClient() {
-  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-}
+import { generateText } from './aiProvider.js';
 
 // ─── Format-specific system prompts ──────────────────────────────────────────
 
@@ -148,25 +144,22 @@ Schema:
 // ─── Exports ──────────────────────────────────────────────────────────────────
 
 export async function generateScript(idea, format = 'carousel') {
-  const client = getClient();
   const cfg = FORMAT_CONFIGS[format] || FORMAT_CONFIGS.carousel;
   const system = COMMON_RULES + '\n\n' + cfg.instruction;
 
-  const msg = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 1800,
+  const raw = await generateText({
+    maxTokens: 1800,
     system,
-    messages: [{ role: 'user', content: `Create a ${format} script for this idea:\n\n"${idea}"` }]
+    user: `Create a ${format} script for this idea:\n\n"${idea}"`,
+    json: true
   });
 
-  const raw = msg.content[0].text.trim();
   const script = JSON.parse(extractJSON(raw));
   validateScript(script, format, cfg.slideCount);
   return script;
 }
 
 export async function regenerateSlide(script, slideIndex, instruction = '') {
-  const client = getClient();
   const current = script.slides[slideIndex];
   const ctx = [
     `Format: ${script.format}`,
@@ -177,14 +170,13 @@ export async function regenerateSlide(script, slideIndex, instruction = '') {
     instruction ? `Instruction: ${instruction}` : 'Make it more engaging and impactful.'
   ].join('\n');
 
-  const msg = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 400,
+  const raw = await generateText({
+    maxTokens: 400,
     system: REGEN_SYSTEM,
-    messages: [{ role: 'user', content: ctx }]
+    user: ctx,
+    json: true
   });
 
-  const raw = msg.content[0].text.trim();
   return JSON.parse(extractJSON(raw));
 }
 
@@ -212,15 +204,13 @@ OUTPUT JSON SCHEMA:
 }`;
 
 export async function generateStory(idea) {
-  const client = getClient();
-  const msg = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 400,
+  const raw = await generateText({
+    maxTokens: 400,
     system: STORY_SYSTEM,
-    messages: [{ role: 'user', content: `Create a story slide for this idea:\n\n"${idea}"` }]
+    user: `Create a story slide for this idea:\n\n"${idea}"`,
+    json: true
   });
 
-  const raw = msg.content[0].text.trim();
   const story = JSON.parse(extractJSON(raw));
   if (!story.headline || !story.explanation || !story.result) {
     throw new Error('Story JSON missing required fields');
